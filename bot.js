@@ -92,50 +92,44 @@ function stopUpdate() {
 function comprarMadeira() {
     // Nota: Lembrar de atualizar número de comerciantes após fazer a compra/venda.
     // NOTA: Ideia boa que tive antes de dormir, ao invés de comprar vários de vez, comprar apenas 1 por vez.
-
-    var comerciantes;
-    var compraMaxima;
-    var compra;
-    var vezes = 0;
-
-    // Se o número de comerciantes disponíveis for maior que o número
-    // de comerciantes máximo por transação, então seta que só trabalharemos
-    // com o número de comerciantes estipulados.
-    // Senão, apenas use a quantidade de comerciantes que estão disponível.
-    if (comerciantesAtualValue >= maxComerciantes) {
-        comerciantes = maxComerciantes;
-    } else {
-        comerciantes = comerciantesAtualValue;
-    }
-
-    // Agora que já sabemos o máximo de comerciantes que podemos usar na transação
-    // Precisamos saber quanto de recurso essa quantidade de comerciante pode carregar.
-    compraMaxima = comerciantes * 1000;
-
-    // Agora que já sabemos quanto podemos carregar, vamos ver quantas vezes podemos
-    // Comprar e quantos pontos premiuns gastar.
-    for (var i = 0; i < compraMaxima; i = i + madeiraValue) {
-
-        if ((i + madeiraValue) > compraMaxima) {
-            break;
-        }
-
-        vezes++;
-    }
-
-    compra = vezes * madeiraValue;
-
-    // Agora que nós sabemos quantas vezes precisamos multiplicar o preço,
-    // vamos saber se temos pontos premium para continuar o processo.
-
-    if (ppDaAldeia > vezes) {
-        console.log('Pode comprar.');
-    } else {
-        console.log('Não pode comprar.');
+    var maximoTransacoes = 5; // Você vai definir nas configurações a quantidade de transação máxima, por compra ou venda.
+    var quantidadeCompra = 0;
+    var vezesCompra = 0;
+    
+    // Vamos comprar a quantidade de recursos igual a quantidade de pontos premium
+    // Pois o usuário pode ter 1 ou 2 pontos premium. Porém há um problema, e se o 
+    // Usuário tiver 100 pontos prêmium, vamos comprar 100? Não. É por isso que 
+    // temos o maximoTransacoes, e nós iremos checar isso no proximo if.
+    if (ppDaAldeia > 0) {
+        vezesCompra = ppDaAldeia;
     }
     
-    /* ---------- Fim da lógica ------------- */
-
+    // Se possuírmos mais pontos premium que o limite de transações, vamos limitar
+    // o número de compra ao limite de transações, isto é maximoTransacoes.
+    if (ppDaAldeia >= maximoTransacoes) {
+        vezesCompra = maximoTransacoes;
+    }
+    
+    // Vamos descobrir agora exatamente quanto de recurso nós iremos comprar.
+    // Esse cálculo é simples, preço da madeira multiplicado pelo número de
+    // vezes que decidimos comprar acima. EX: Preco = 500, Vezes = 2 => quantidadeCompra = 1000;
+    quantidadeCompra = madeiraValue * vezesCompra;
+    
+    // Agora que já temos o limite de transações possíveis baseados na quantidade de
+    // Pontos Premium que o usuário possui, vamos verificar se há espaço no Armazém
+    // para continuar com a transação.
+    
+    // Se a quantidade de madeira que você tem na aldeia, mais a quantidade de madeira que você
+    // vai receber é maior que a quantidade disponível do seu armazem, então não podemos comprar.
+    if ((madeiraDaAldeia + quantidadeCompra) > armazemDaAldeia) {
+        console.log('Infelizmente você está sem espaço no Armazém para comprar tudo.');
+        console.log('Vamos calcular quanto recurso você pode comprar com o espaço restante.');
+     // Se o espaço for menor, então continuar a transação normalmente.
+     } else {
+         console.log('Você pode comprar normalmente! Seguir para a compra.');
+     }
+    
+ 
 }
 
 
@@ -152,7 +146,6 @@ function logicaGeral() {
             if (madeiraDaAldeia >= madeiraValue) {
                 // Vende os recursos!
                 consoleDebug('O mercado de madeira está em alta! Venda madeira por ' + madeiraValue + '.');
-                comprarMadeira();
             } else {
                 // Não há recursos suficientes para realizar a compra!
                 consoleDebug('O mercado de madeira está em alta! Mas você não possui recursos o suficiente.');
@@ -166,6 +159,7 @@ function logicaGeral() {
             if (ppDaAldeia >= 1) {
                 // Compra os recursos agora!
                 consoleDebug('O mercado de madeira está em baixa! Compre madeira por ' + madeiraValue + '.');
+                comprarMadeira();
             } else {
                 // Não há pontos premium suficientes para comprar os recursos agora!
                 consoleDebug('O mercado de madeira está em baixa! Porém você não possui madeira suficiente.');
