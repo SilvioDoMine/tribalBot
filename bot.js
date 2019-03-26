@@ -13,6 +13,7 @@ var modoDebug       = true; // Deseja ativar o modo de debug, com mais detalhes?
 var madeiraDaAldeia;
 var argilaDaAldeia;
 var ferroDaAldeia;
+var armazemDaAldeia;
 var ppDaAldeia;
 var madeiraValue;
 var argilaValue;
@@ -44,13 +45,14 @@ function consoleDebug($msg) {
 // cada x segundos, definidos na config no tempoDeReacao
 function valuesUpdate() {
 
-    // Pega a quantidade de recursos que você possui.
+    // Pega a quantidade de recursos e armazem que você possui.
     madeiraDaAldeia = parseInt($('#wood').text());
     argilaDaAldeia  = parseInt($('#stone').text());
     ferroDaAldeia   = parseInt($('#iron').text());
     ppDaAldeia      = parseInt($('#premium_points').text());
+    armazemDaAldeia = parseInt($('#storage').text());
 
-    consoleDebug('Sua madeira: ' + madeiraDaAldeia + ' Sua argila: ' + argilaDaAldeia + ' Seu ferro: ' + ferroDaAldeia + ' Pontos Premium: ' + ppDaAldeia);
+    consoleDebug('Sua madeira: ' + madeiraDaAldeia + ' Sua argila: ' + argilaDaAldeia + ' Seu ferro: ' + ferroDaAldeia + ' Pontos Premium: ' + ppDaAldeia + ' Armazém: ' + armazemDaAldeia);
 
     // Pega os valores em recursos da bolsa e armazena-os nas respectivas variaveis.
     madeiraValue    = parseInt($('div.premium-exchange-sep').eq(0).text());
