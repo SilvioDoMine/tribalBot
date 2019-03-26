@@ -115,10 +115,17 @@ function comprarMadeira() {
     // vezes que decidimos comprar acima. EX: Preco = 500, Vezes = 2 => quantidadeCompra = 1000;
     quantidadeCompra = madeiraValue * vezesCompra;
     
+    // TODO: Fazer checagem se há comerciantes disponíveis baseados na quantidadeCompra
+    // pois é necessário 1 comerciante a cada 1000 recursos. Se houver 0 comerciantes
+    // disponíveis, então abandonaremos a transação logo aqui. Se houver mais comerciantes
+    // que o necessário, então continua a transação normalmente. Se houver mais de 0 comerciantes
+    // mas não hover a quantidade necessária para levar tudo, recalcular a quantidade máxima de
+    // vezes que podemos comprar.
+    
     // Agora que já temos o limite de transações possíveis baseados na quantidade de
     // Pontos Premium que o usuário possui, vamos verificar se há espaço no Armazém
     // para continuar com a transação.
-    
+    // --------------------------------------------------------------------------------------
     // Se a quantidade de madeira que você tem na aldeia, mais a quantidade de madeira que você
     // vai receber é maior que a quantidade disponível do seu armazem, então não podemos comprar.
     if ((madeiraDaAldeia + quantidadeCompra) > armazemDaAldeia) {
