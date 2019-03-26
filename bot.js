@@ -3,7 +3,7 @@
 **************** */
 var comprarQuando   = 200;  // A partir de quanto pode começar a comprar recursos? Se digitar 0, desabilita a compra.
 var venderQuando    = 900;  // A partir de quanto pode começar a vender recursos? Se digitar 0, desabilita a venda.
-var maxComerciantes = 5;
+var maxComerciantes = 5; // Máximo de comerciantes utilizados em cada wipe para comprar ou vender recursos. [Ainda em development]
 var tempoDeReacao   = 10000; // Tempo de reação para cada update em mili-segundos.
 var modoDebug       = true; // Deseja ativar o modo de debug, com mais detalhes? True ou False;
 
@@ -29,6 +29,9 @@ var fieldVenderFerro    = $('input.premium-exchange-input').eq(5);$('input.btn-p
 var calcularOferta      = $('input.btn-premium-exchange-buy');
 var confirmarCompra     = $('button.btn-confirm-yes');
 
+// Função que envia mensagem para o usuário
+// Somente se ele tiver ativado o modo debug
+// Senão, apenas mostra a transação clean
 function consoleDebug($msg) {
 
     if (modoDebug) {
@@ -36,6 +39,9 @@ function consoleDebug($msg) {
     }
 }
 
+// Função que atualiza os valores a cada tick
+// Essa função é executada em loop infinito a 
+// cada x segundos, definidos na config no tempoDeReacao
 function valuesUpdate() {
 
     // Pega a quantidade de recursos que você possui.
@@ -59,6 +65,9 @@ function valuesUpdate() {
 
 }
 
+// Função utilizada para cancelar o loop infinito
+// a qualquer momento, ainda não se sabe para que
+// vamos utilizar, mas é sempre bom ter a opção.
 function stopUpdate() {
 
     consoleDebug('Cancelando loop infinito agora!');
@@ -66,6 +75,8 @@ function stopUpdate() {
     clearInterval();
 }
 
+// Função que faz o cálculo final se devemos ou não
+// Comprar o recurso, e então, compramos.
 function comprarMadeira() {
     // Nota: Lembrar de atualizar número de comerciantes após fazer a compra/venda.
     // NOTA: Ideia boa que tive antes de dormir, ao invés de comprar vários de vez, comprar apenas 1 por vez.
