@@ -40,6 +40,16 @@ function consoleDebug($msg) {
     }
 }
 
+// Essa função gera um número em mili segundos
+// Entre 1000 e 3000 ser usado como click da plataforma.
+// Isso ajuda para que não detectem nossa atividade como bot
+// Pois se clicarmos muito rápido, ou sempre na mesma velocidade
+// É muito fácil para detectar como bot. Desta forma, a velocidade
+// De click sempre vai ser diferente.
+function generateTimeBetweenClicks() {
+  return Math.floor(Math.random() * 3000) + 1000;
+}
+
 // Função que atualiza os valores a cada tick
 // Essa função é executada em loop infinito a 
 // cada x segundos, definidos na config no tempoDeReacao
