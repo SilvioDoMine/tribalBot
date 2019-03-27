@@ -3,8 +3,8 @@
 **************** */
 var comprarQuando   = 200;  // A partir de quanto pode começar a comprar recursos? Se digitar 0, desabilita a compra.
 var venderQuando    = 900;  // A partir de quanto pode começar a vender recursos? Se digitar 0, desabilita a venda.
-var maxComerciantes = 5; // Máximo de comerciantes utilizados em cada wipe para comprar ou vender recursos. [Ainda em development]
-var tempoDeReacao   = 10000; // Tempo de reação para cada update em mili-segundos.
+var maxTransacoes   = 5;    // Você vai definir nas configurações a quantidade de transação máxima, por compra ou venda.
+var tempoDeReacao   = 10000;// Tempo de reação para cada update em mili-segundos.
 var modoDebug       = true; // Deseja ativar o modo de debug, com mais detalhes? True ou False;
 
 /*********** End config *******/
@@ -92,22 +92,21 @@ function stopUpdate() {
 function comprarMadeira() {
     // Nota: Lembrar de atualizar número de comerciantes após fazer a compra/venda.
     // NOTA: Ideia boa que tive antes de dormir, ao invés de comprar vários de vez, comprar apenas 1 por vez.
-    var maximoTransacoes = 5; // Você vai definir nas configurações a quantidade de transação máxima, por compra ou venda.
     var quantidadeCompra = 0;
     var vezesCompra = 0;
     
     // Vamos comprar a quantidade de recursos igual a quantidade de pontos premium
     // Pois o usuário pode ter 1 ou 2 pontos premium. Porém há um problema, e se o 
     // Usuário tiver 100 pontos prêmium, vamos comprar 100? Não. É por isso que 
-    // temos o maximoTransacoes, e nós iremos checar isso no proximo if.
+    // temos o maxTransacoes, e nós iremos checar isso no proximo if.
     if (ppDaAldeia > 0) {
         vezesCompra = ppDaAldeia;
     }
     
     // Se possuírmos mais pontos premium que o limite de transações, vamos limitar
-    // o número de compra ao limite de transações, isto é maximoTransacoes.
-    if (ppDaAldeia >= maximoTransacoes) {
-        vezesCompra = maximoTransacoes;
+    // o número de compra ao limite de transações, isto é maxTransacoes.
+    if (ppDaAldeia >= maxTransacoes) {
+        vezesCompra = maxTransacoes;
     }
     
     // Vamos descobrir agora exatamente quanto de recurso nós iremos comprar.
