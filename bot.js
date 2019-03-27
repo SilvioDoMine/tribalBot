@@ -20,7 +20,7 @@ var argilaValue;
 var ferroValue;
 var comerciantesAtualValue;
 var comerciantesTotalValue;
-
+// Salva em variáveis os campos de input, e os botões para uso futuro
 var fieldComprarMadeira = $('input.premium-exchange-input').eq(0);
 var fieldComprarArgila  = $('input.premium-exchange-input').eq(1);
 var fieldComprarFerro   = $('input.premium-exchange-input').eq(2);
@@ -149,7 +149,7 @@ function logicaGeral() {
         // Se o preço venda definido pelo usuário for maior que 0;
         // E se o preço do recurso for maior ou igual ao definido pelo usuário;
         if (venderQuando > 0 && madeiraValue >= venderQuando) {
-            // E se a quantidade de pontos na aldeia for maior que um.
+            // E se a quantidade de recurso que eu tenho na aldeia for maior que o preço do recurso.
             if (madeiraDaAldeia >= madeiraValue) {
                 // Vende os recursos!
                 consoleDebug('O mercado de madeira está em alta! Venda madeira por ' + madeiraValue + '.');
@@ -176,7 +176,7 @@ function logicaGeral() {
         // Se o preço venda definido pelo usuário for maior que 0;
         // E se o preço do recurso for maior ou igual ao definido pelo usuário;
         if (venderQuando > 0 && argilaValue >= venderQuando) {
-            // E se a quantidade de pontos na aldeia for maior que um.
+            // E se a quantidade de recurso que eu tenho na aldeia for maior que o preço do recurso.
             if (madeiraDaAldeia >= argilaValue) {
                 // Vende os recursos!
                 consoleDebug('O mercado de argila está em alta! Venda argila por ' + argilaValue + '.');
@@ -203,7 +203,7 @@ function logicaGeral() {
         // Se o preço venda definido pelo usuário for maior que 0;
         // E se o preço do recurso for maior ou igual ao definido pelo usuário;
         if (venderQuando > 0 && ferroValue >= venderQuando) {
-            // E se a quantidade de pontos na aldeia for maior que um.
+            // E se a quantidade de recurso que eu tenho na aldeia for maior que o preço do recurso.
             if (madeiraDaAldeia >= ferroValue) {
                 // Vende os recursos!
                 consoleDebug('O mercado de ferro está em alta! Venda ferro por ' + ferroValue + '.');
@@ -235,13 +235,17 @@ function logicaGeral() {
 
 // Função principal, tudo que for executado, tem que passar por aqui. 
 function main() {
-
+    // Chama a função que atualiza todos os valores.
     valuesUpdate();
+    // Chama a função que verifica se deve comprar ou vender.
     logicaGeral();
 }
 
+// Seta um loop infito, que acontece a cada x segundos.
+// O tempo do loop é definido pela variavel tempoDeReacao.
 window.setInterval(function(){
-    
+    // Seta o loop para acontecer dentro da função main().
+    // Tudo que estiver dentro dela, será inserido dentro desse loop.
     main();
 
 }, tempoDeReacao);
