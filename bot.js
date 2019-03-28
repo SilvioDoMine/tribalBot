@@ -1,9 +1,9 @@
 /* **************
     Configs
 **************** */
-var venderQuando    = 200;  // A partir de quanto pode começar a vender recursos? Se digitar 0, desabilita a venda.
-var comprarQuando   = 900;  // A partir de quanto pode começar a comprar recursos? Se digitar 0, desabilita a compra.
-var maxTransacoes   = 5;    // Você vai definir nas configurações a quantidade de transação máxima, por compra ou venda.
+var venderQuando    = 300;  // A partir de quanto pode começar a vender recursos? Se digitar 0, desabilita a venda.
+var comprarQuando   = 1000;  // A partir de quanto pode começar a comprar recursos? Se digitar 0, desabilita a compra.
+var maxTransacoes   = 1;    // Você vai definir nas configurações a quantidade de transação máxima, por compra ou venda.
 var tempoDeReacao   = 10000;// Tempo de reação para cada update em mili-segundos.
 var modoDebug       = true; // Deseja ativar o modo de debug, com mais detalhes? True ou False;
 
@@ -28,7 +28,6 @@ var fieldVenderMadeira  = $('input.premium-exchange-input').eq(3);
 var fieldVenderArgila   = $('input.premium-exchange-input').eq(4);
 var fieldVenderFerro    = $('input.premium-exchange-input').eq(5);$('input.btn-premium-exchange-buy');
 var calcularOferta      = $('input.btn-premium-exchange-buy');
-var confirmarCompra     = $('button.btn-confirm-yes');
 
 // Função que envia mensagem para o usuário
 // Somente se ele tiver ativado o modo debug
@@ -73,7 +72,7 @@ function valuesUpdate() {
     comerciantesAtualValue = parseInt($('#market_merchant_available_count').text());
     comerciantesTotalValue = parseInt($('#market_merchant_total_count').text());
 
-    consoleDebug('Preço madeira: ' + madeiraValue + " Preço argila: " + argilaValue + " Preço ferro: " + ferroValue + " Comerciantes: " + comerciantesAtualValue + "/" + comerciantesTotalValue);
+    console.log('Preço madeira: ' + madeiraValue + " Preço argila: " + argilaValue + " Preço ferro: " + ferroValue + " Comerciantes: " + comerciantesAtualValue + "/" + comerciantesTotalValue);
 
 }
 
@@ -89,14 +88,53 @@ function stopLoop() {
 
 // Função que faz o cálculo final se devemos ou não
 // Comprar o recurso, e então, compramos.
-function comprarRecurso(recursoValue, recursoDaAldeia) {
+function comprarRecurso(recursoType) {
     // Nota: Lembrar de atualizar número de comerciantes após fazer a compra/venda.
     // NOTA: Ideia boa que tive antes de dormir, ao invés de comprar vários de vez, comprar apenas 1 por vez.
     
     // Declarando variáveis para uso futuro.
     var quantidadeCompra = 0;
     var vezesCompra = 0;
+    var recursoValue;
+    var recursoDaAldeia;
+    var inputComprar;
+
+    /* ========================================================
+    /   Verificação para saber com qual recurso vamos trabalhar
+    /  ======================================================== */    
     
+    switch(recursoType) {
+        case 'madeira':
+            recursoValue = madeiraValue;
+            recursoDaAldeia = madeiraDaAldeia;
+            inputComprar = fieldComprarMadeira;
+            break;
+        case 'argila':
+            recursoValue = argilaValue;
+            recursoDaAldeia = argilaDaAldeia;
+            inputComprar = fieldComprarArgila;
+            break;
+        case 'ferro':
+            recursoValue = ferroValue;
+            recursoDaAldeia = ferroDaAldeia;
+            inputComprar = fieldComprarFerro;
+            break;
+        default:
+            recursoValue = 0;
+            recursoDaAldeia = 0;
+    }
+
+    // Um pouco de programação defensiva, que é para que se o usuário tentar editar
+    // o código, e tiver feito uma "cagada", que não quebre o código inteiro.
+    // Se o recursoValue ou recursoDaAldeia forem 0 (ou seja, caso default), então
+    // quer dizer que o usuário editou o código e colocou um recurso que não existe
+    // logo, abandona a compra pois vai dar errado!
+    if (recursoValue == 0 && recursoDaAldeia == 0) {
+        consoleDebug('Amigão, você editou o código e digitou um recurso inválido na função comprarRecurso(). Se ligue aí!');
+        return false;
+    }
+
+
     /* ========================================================
     /   Verificação de Pontos Premium
     /  ======================================================== */
@@ -139,7 +177,7 @@ function comprarRecurso(recursoValue, recursoDaAldeia) {
         consoleDebug('Seus comerciantes não tem capacidade suficiente para comprar tudo que foi estipulado! Vamos recalcular?');
 
         // TRADUZINDO A LÓGICA MATEMÁTICA: Vamos fazer uma repetição entre os valores a quantidade de compra, começando
-        // do maior para o menor. EX: O preço do recuros está 500. Vamos comprar 5 vezes, isso daria 2500. Porém, só temos
+        // do maior para o menor. EX: O preço do recurso está 500. Vamos comprar 5 vezes, isso daria 2500. Porém, só temos
         // 1 comerciante disponível. Isso dá 1000. Então vamos verificar se 500x4 (2000) igual ou menor que 1000? Não. 
         // 500x3 (1500) igual ou menor que 1000? Não. 500x2 (1000) igual ou menor que mil? SIM! Então vamos comprar.
         for(var i = (vezesCompra - 1); i >= 0; i--) {
@@ -187,6 +225,28 @@ function comprarRecurso(recursoValue, recursoDaAldeia) {
      // Se o espaço for menor, então continuar a transação normalmente.
      } else {
          console.log('Você pode comprar normalmente! Seguir para a compra.');
+
+        /* ========================================================
+        /   Fazendo a compra agora mesmo!
+        /  ======================================================== */
+        // Agora que já temos a quantidade certa que vamos comprar,
+        // vamos colocar para funcionar agora mesmo.
+        // ========================================================
+        // Primeiro de tudo, vamos setar o loop de humanizar, com o tempo
+        // que foi estabelecido acima pela função generateTImeBeetweenClicks
+        setTimeout(function() {
+            inputComprar.val(quantidadeCompra);
+            
+            setTimeout(function() {
+                calcularOferta.click();
+
+                setTimeout(function() {
+                    document.getElementsByClassName('btn evt-confirm-btn btn-confirm-yes')[0].click();
+
+                }, generateTimeBetweenClicks());
+            }, generateTimeBetweenClicks());
+        }, generateTimeBetweenClicks());
+
      }
     
  
@@ -219,7 +279,7 @@ function logicaGeral() {
             if (ppDaAldeia >= 1) {
                 // Compra os recursos agora!
                 consoleDebug('O mercado de madeira está em alta! Compre madeira por ' + madeiraValue + '.');
-                comprarRecurso(madeiraValue,madeiraDaAldeia);
+                comprarRecurso('madeira');
             } else {
                 // Não há pontos premium suficientes para comprar os recursos agora!
                 consoleDebug('O mercado de madeira está em alta! Porém você não possui pontos premium suficiente.');
@@ -246,7 +306,7 @@ function logicaGeral() {
             if (ppDaAldeia >= 1) {
                 // Compra os recursos agora!
                 consoleDebug('O mercado de argila está em alta! Compre argila por ' + argilaValue + '.');
-                comprarRecurso(argilaValue,argilaDaAldeia);
+                comprarRecurso('argila');
             } else {
                 // Não há pontos premium suficientes para comprar os recursos agora!
                 consoleDebug('O mercado de argila está em alta! Porém você não possui pontos.');
@@ -274,7 +334,7 @@ function logicaGeral() {
             if (ppDaAldeia >= 1) {
                 // Compra os recursos agora!
                 consoleDebug('O mercado de ferro está em alta! Compre ferro por ' + ferroValue + '.');
-                comprarRecurso(ferroValue,ferroDaAldeia);
+                comprarRecurso('ferro');
             } else {
                 // Não há pontos premium suficientes para comprar os recursos agora!
                 consoleDebug('O mercado de ferro está em alta! Porém você não possui pontos.');
