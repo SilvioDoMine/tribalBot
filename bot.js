@@ -89,7 +89,7 @@ function stopLoop() {
 
 // Função que faz o cálculo final se devemos ou não
 // Comprar o recurso, e então, compramos.
-function comprarMadeira() {
+function comprarRecurso(recursoValue, recursoDaAldeia) {
     // Nota: Lembrar de atualizar número de comerciantes após fazer a compra/venda.
     // NOTA: Ideia boa que tive antes de dormir, ao invés de comprar vários de vez, comprar apenas 1 por vez.
     
@@ -124,7 +124,7 @@ function comprarMadeira() {
     // Vamos descobrir agora exatamente quanto de recurso nós iremos comprar.
     // Esse cálculo é simples, preço da madeira multiplicado pelo número de
     // vezes que decidimos comprar acima. EX: Preco = 500, Vezes = 2 => quantidadeCompra = 1000;
-    quantidadeCompra = madeiraValue * vezesCompra;
+    quantidadeCompra = recursoValue * vezesCompra;
 
 
     /* ========================================================
@@ -144,7 +144,7 @@ function comprarMadeira() {
         // 500x3 (1500) igual ou menor que 1000? Não. 500x2 (1000) igual ou menor que mil? SIM! Então vamos comprar.
         for(var i = (vezesCompra - 1); i >= 0; i--) {
 
-            quantidadeCompra = madeiraValue * i;
+            quantidadeCompra = recursoValue * i;
 
             if ((comerciantesAtualValue * 1000) >= quantidadeCompra) {
                 // Já achamos o valor que queríamos.
@@ -181,7 +181,7 @@ function comprarMadeira() {
     // --------------------------------------------------------------------------------------
     // Se a quantidade de madeira que você tem na aldeia, mais a quantidade de madeira que você
     // vai receber é maior que a quantidade disponível do seu armazem, então não podemos comprar.
-    if ((madeiraDaAldeia + quantidadeCompra) > armazemDaAldeia) {
+    if ((recursoDaAldeia + quantidadeCompra) > armazemDaAldeia) {
         console.log('Infelizmente você está sem espaço no Armazém para comprar tudo.');
         console.log('Vamos calcular quanto recurso você pode comprar com o espaço restante.');
      // Se o espaço for menor, então continuar a transação normalmente.
@@ -219,7 +219,7 @@ function logicaGeral() {
             if (ppDaAldeia >= 1) {
                 // Compra os recursos agora!
                 consoleDebug('O mercado de madeira está em alta! Compre madeira por ' + madeiraValue + '.');
-                comprarMadeira();
+                comprarRecurso(madeiraValue,madeiraDaAldeia);
             } else {
                 // Não há pontos premium suficientes para comprar os recursos agora!
                 consoleDebug('O mercado de madeira está em alta! Porém você não possui pontos premium suficiente.');
@@ -246,6 +246,7 @@ function logicaGeral() {
             if (ppDaAldeia >= 1) {
                 // Compra os recursos agora!
                 consoleDebug('O mercado de argila está em alta! Compre argila por ' + argilaValue + '.');
+                comprarRecurso(argilaValue,argilaDaAldeia);
             } else {
                 // Não há pontos premium suficientes para comprar os recursos agora!
                 consoleDebug('O mercado de argila está em alta! Porém você não possui pontos.');
@@ -273,6 +274,7 @@ function logicaGeral() {
             if (ppDaAldeia >= 1) {
                 // Compra os recursos agora!
                 consoleDebug('O mercado de ferro está em alta! Compre ferro por ' + ferroValue + '.');
+                comprarRecurso(ferroValue,ferroDaAldeia);
             } else {
                 // Não há pontos premium suficientes para comprar os recursos agora!
                 consoleDebug('O mercado de ferro está em alta! Porém você não possui pontos.');
