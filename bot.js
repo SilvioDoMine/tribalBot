@@ -2,7 +2,7 @@
     Configs
 **************** */
 var comprarQuando   = 200;  // A partir de quanto pode começar a comprar recursos? Se digitar 0, desabilita a compra.
-var venderQuando    = 900;  // A partir de quanto pode começar a vender recursos? Se digitar 0, desabilita a venda.
+var venderQuando    = 1000;  // A partir de quanto pode começar a vender recursos? Se digitar 0, desabilita a venda.
 var maxTransacoes   = 5;    // Você vai definir nas configurações a quantidade de transação máxima, por compra ou venda.
 var tempoDeReacao   = 10000;// Tempo de reação para cada update em mili-segundos.
 var modoDebug       = true; // Deseja ativar o modo de debug, com mais detalhes? True ou False;
@@ -80,11 +80,11 @@ function valuesUpdate() {
 // Função utilizada para cancelar o loop infinito
 // a qualquer momento, ainda não se sabe para que
 // vamos utilizar, mas é sempre bom ter a opção.
-function stopUpdate() {
+function stopLoop() {
 
     consoleDebug('Cancelando loop infinito agora!');
     // Cancela o loop infinito.
-    clearInterval();
+    clearInterval(window);
 }
 
 // Função que faz o cálculo final se devemos ou não
@@ -92,6 +92,8 @@ function stopUpdate() {
 function comprarMadeira() {
     // Nota: Lembrar de atualizar número de comerciantes após fazer a compra/venda.
     // NOTA: Ideia boa que tive antes de dormir, ao invés de comprar vários de vez, comprar apenas 1 por vez.
+    
+    // Declarando variáveis para uso futuro.
     var quantidadeCompra = 0;
     var vezesCompra = 0;
     
@@ -113,14 +115,57 @@ function comprarMadeira() {
     // Esse cálculo é simples, preço da madeira multiplicado pelo número de
     // vezes que decidimos comprar acima. EX: Preco = 500, Vezes = 2 => quantidadeCompra = 1000;
     quantidadeCompra = madeiraValue * vezesCompra;
+
+
+    /* ========================================================
+    /   Verificação do Comerciante
+    /  ======================================================== */
     
-    // TODO: Fazer checagem se há comerciantes disponíveis baseados na quantidadeCompra
-    // pois é necessário 1 comerciante a cada 1000 recursos. Se houver 0 comerciantes
-    // disponíveis, então abandonaremos a transação logo aqui. Se houver mais comerciantes
-    // que o necessário, então continua a transação normalmente. Se houver mais de 0 comerciantes
-    // mas não hover a quantidade necessária para levar tudo, recalcular a quantidade máxima de
-    // vezes que podemos comprar.
+    // Agora vamos calcular se temos comerciantes suficientes!
+    // Se a quantidade de comerciantes atuais multiplicado por 1000
+    // (pois cada comerciante carrega no máximo 1000 recursos)
+    // for menor que a quantidade de compra, previamente estabelecida
+    // então não podemos comprar. Vamos recalcular a quantidade máxima.
+    if ((comerciantesAtualValue * 1000) <= quantidadeCompra) {
+        consoleDebug('Seus comerciantes não tem capacidade suficiente para comprar tudo que foi estipulado! Vamos recalcular?');
+
+        // TRADUZINDO A LÓGICA MATEMÁTICA: Vamos fazer uma repetição entre os valores a quantidade de compra, começando
+        // do maior para o menor. EX: O preço do recuros está 500. Vamos comprar 5 vezes, isso daria 2500. Porém, só temos
+        // 1 comerciante disponível. Isso dá 1000. Então vamos verificar se 500x4 (2000) igual ou menor que 1000? Não. 
+        // 500x3 (1500) igual ou menor que 1000? Não. 500x2 (1000) igual ou menor que mil? SIM! Então vamos comprar.
+        for(var i = (vezesCompra - 1); i >= 0; i--) {
+
+            quantidadeCompra = madeiraValue * i;
+
+            if ((comerciantesAtualValue * 1000) >= quantidadeCompra) {
+                // Já achamos o valor que queríamos.
+                // Pode parar o loop agora mesmo!
+                break;
+            }
+
+        }
     
+    }
+
+    // Para finalizarmos a lógica do Comerciante, vamos verificar se a lógica acima não transformou
+    // o valor de quantidadeCompra em zero. Pois se ele tiver transformado, quer dizer que ele varreu
+    // todos os valores e não encontrou uma quantidade que o comerciante pudesse carregar. Os motivos são:
+    // 1. Não existem comerciantes na aldeia.
+    // 2. O preço é muito alto para que o seu comerciante consiga carregar.
+    // 2 EX: Você só tem um comerciante, que carrega 1000, mas o preço do recurso está 1045.
+    if (quantidadeCompra == 0) {
+        // Exibe mensagem na tela, independente do modo debug.
+        console.log('Infelizmente não há nenhum comerciante disponível, ou o comerciante que você tem disponível não é capaz de carregar o que você deseja.');
+        
+        // Sai da função de compra, retornando o valor booleano false.
+        // Esse valor não será usado para nada, porém pelo menos
+        // não continuará a executar o resto da lógica da função comprarMadeira().
+        return false;
+    }
+    
+    /* ========================================================
+    /   Verificação do Armazem
+    /  ======================================================== */
     // Agora que já temos o limite de transações possíveis baseados na quantidade de
     // Pontos Premium que o usuário possui, vamos verificar se há espaço no Armazém
     // para continuar com a transação.
@@ -128,7 +173,7 @@ function comprarMadeira() {
     // Se a quantidade de madeira que você tem na aldeia, mais a quantidade de madeira que você
     // vai receber é maior que a quantidade disponível do seu armazem, então não podemos comprar.
     if ((madeiraDaAldeia + quantidadeCompra) > armazemDaAldeia) {
-        console.log('Infelizmente você está sem espaço no Armazém para comprar tudo.');
+        console.log('Infelizmente você está sem espaço no Armazém para comprar tudo, ou está sem comerciantes.');
         console.log('Vamos calcular quanto recurso você pode comprar com o espaço restante.');
      // Se o espaço for menor, então continuar a transação normalmente.
      } else {
