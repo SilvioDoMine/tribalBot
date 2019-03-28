@@ -246,7 +246,6 @@ function logicaGeral() {
             if (ppDaAldeia >= 1) {
                 // Compra os recursos agora!
                 consoleDebug('O mercado de argila está em alta! Compre argila por ' + argilaValue + '.');
-                comprarargila();
             } else {
                 // Não há pontos premium suficientes para comprar os recursos agora!
                 consoleDebug('O mercado de argila está em alta! Porém você não possui pontos.');
@@ -274,7 +273,6 @@ function logicaGeral() {
             if (ppDaAldeia >= 1) {
                 // Compra os recursos agora!
                 consoleDebug('O mercado de ferro está em alta! Compre ferro por ' + ferroValue + '.');
-                comprarferro();
             } else {
                 // Não há pontos premium suficientes para comprar os recursos agora!
                 consoleDebug('O mercado de ferro está em alta! Porém você não possui pontos.');
