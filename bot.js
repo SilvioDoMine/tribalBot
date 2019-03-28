@@ -232,6 +232,12 @@ function comprarRecurso(recursoType) {
         // Agora que já temos a quantidade certa que vamos comprar,
         // vamos colocar para funcionar agora mesmo.
         // ========================================================
+        // Primeiro de tudo, vamos limpar todos os campos de compra e venda
+        // para evitar qualquer tipo de conflito futuro.
+        fieldComprarMadeira.val('');
+        fieldComprarArgila.val('');
+        fieldComprarFerro.val('');
+        
         // Primeiro de tudo, vamos setar o loop de humanizar, com o tempo
         // que foi estabelecido acima pela função generateTImeBeetweenClicks
         setTimeout(function() {
@@ -246,6 +252,10 @@ function comprarRecurso(recursoType) {
                 }, generateTimeBetweenClicks());
             }, generateTimeBetweenClicks());
         }, generateTimeBetweenClicks());
+
+        // Após fazer a compra, vamos clicar no botão de cancelar, só pra
+        // desencargo de consciência em caso de algo der errado!
+        document.getElementsByClassName('btn evt-cancel-btn btn-confirm-no')[0].click();
 
      }
     
