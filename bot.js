@@ -1,7 +1,7 @@
 /* **************
     Configs
 **************** */
-var venderQuando    = 300;  // A partir de quanto pode começar a vender recursos? Se digitar 0, desabilita a venda.
+var venderQuando    = 500;  // A partir de quanto pode começar a vender recursos? Se digitar 0, desabilita a venda.
 var comprarQuando   = 1000;  // A partir de quanto pode começar a comprar recursos? Se digitar 0, desabilita a compra.
 var maxTransacoes   = 1;    // Você vai definir nas configurações a quantidade de transação máxima, por compra ou venda.
 var tempoDeReacao   = 10000;// Tempo de reação para cada update em mili-segundos.
@@ -222,6 +222,7 @@ function comprarRecurso(recursoType) {
     if ((recursoDaAldeia + quantidadeCompra) > armazemDaAldeia) {
         console.log('Infelizmente você está sem espaço no Armazém para comprar tudo.');
         console.log('Vamos calcular quanto recurso você pode comprar com o espaço restante.');
+        return false;
      // Se o espaço for menor, então continuar a transação normalmente.
      } else {
          console.log('Você pode comprar normalmente! Seguir para a compra.');
@@ -238,7 +239,7 @@ function comprarRecurso(recursoType) {
         fieldComprarArgila.val('');
         fieldComprarFerro.val('');
         
-        // Primeiro de tudo, vamos setar o loop de humanizar, com o tempo
+        // Segundamente, vamos setar o loop de humanizar, com o tempo
         // que foi estabelecido acima pela função generateTImeBeetweenClicks
         setTimeout(function() {
             inputComprar.val(quantidadeCompra);
@@ -258,10 +259,167 @@ function comprarRecurso(recursoType) {
         document.getElementsByClassName('btn evt-cancel-btn btn-confirm-no')[0].click();
 
      }
+
+     console.log('Você acabou de comprar ' + quantidadeCompra + 'de ' + recursoType + '. Parabéns!');
     
- 
 }
 
+function venderRecurso(recursoType) {
+
+    /* ========================================================
+    /   Declarando variáveis para uso futuro.
+    /  ======================================================== */
+    var quantidadeVenda = 0;
+    var vezesVenda = 0;
+    var recursoValue;
+    var recursoDaAldeia;
+    var inputVender;
+
+    /* ========================================================
+    /   Verificação para saber com qual recurso vamos trabalhar
+    /  ======================================================== */    
+    switch(recursoType) {
+        case 'madeira':
+            recursoValue = madeiraValue;
+            recursoDaAldeia = madeiraDaAldeia;
+            inputVender = fieldVenderMadeira;
+            break;
+        case 'argila':
+            recursoValue = argilaValue;
+            recursoDaAldeia = argilaDaAldeia;
+            inputVender = fieldVenderArgila;
+            break;
+        case 'ferro':
+            recursoValue = ferroValue;
+            recursoDaAldeia = ferroDaAldeia;
+            inputVender = fieldVenderFerro;
+            break;
+        default:
+            recursoValue = 0;
+            recursoDaAldeia = 0;
+    }
+
+    // Um pouco de programação defensiva, que é para que se o usuário tentar editar
+    // o código, e tiver feito uma "cagada", que não quebre o código inteiro.
+    // Se o recursoValue ou recursoDaAldeia forem 0 (ou seja, caso default), então
+    // quer dizer que o usuário editou o código e colocou um recurso que não existe
+    // logo, abandona a venda pois vai dar errado!
+    if (recursoValue == 0 && recursoDaAldeia == 0) {
+        consoleDebug('Amigão, você editou o código e digitou um recurso inválido na função venderRecurso(). Se ligue aí!');
+        // NOTA: Ainda é necessário fazer um tratamento aqui. Colocamos um return false para não parar o programa.
+        return false;
+    }
+
+    /* ========================================================
+    /  Verificação de quantas vezes vamos comprar.
+    /  ======================================================== */
+    // Primeiro, vamos verificar se podemos vender recursos de
+    // acordo com a quantidade de vezes definida em maxTransacoes.
+    quantidadeVenda = maxTransacoes * recursoValue; 
+
+    // Se a quantidade de recursos que eu tenho na aldeia, for menor
+    // que a quantidadeVenda, então, vamos recalcular!
+    if (recursoDaAldeia < quantidadeVenda ) {
+        console.log('Infelizmente você não possui recursos na sua aldeia suficiente para vender (' + quantidadeVenda + '). Vamos recalcular?');
+    
+        // TRADUZINDO A LÓGICA MATEMÁTICA: Vamos fazer uma repetição entre os valores a quantidade de venda, começando
+        // do maior para o menor. EX: O preço do recurso está 500. Vamos vender 5 vezes, isso daria 2500. Porém, só temos
+        // 1 comerciante disponível. Isso dá 1000. Então vamos verificar se 500x4 (2000) igual ou menor que 1000? Não. 
+        // 500x3 (1500) igual ou menor que 1000? Não. 500x2 (1000) igual ou menor que mil? SIM! Então vamos vender.
+        for(var i = (vezesVenda - 1); i >= 0; i--) {
+            quantidadeVenda = recursoValue * i;
+            vezesVenda = i;
+
+            if (recursoDaAldeia >= quantidadeVenda) {
+                break;
+            }
+
+        }
+
+    }
+
+    /* ========================================================
+    /   Verificação do Comerciante
+    /  ======================================================== */
+    // Agora vamos calcular se temos comerciantes suficientes!
+    // Se a quantidade de comerciantes atuais multiplicado por 1000
+    // (pois cada comerciante carrega no máximo 1000 recursos)
+    // for menor que a quantidade de venda, previamente estabelecida
+    // então não podemos vender. Vamos recalcular a quantidade máxima.
+    if ((comerciantesAtualValue * 1000) <= quantidadeVenda) {
+        consoleDebug('Seus comerciantes não tem capacidade suficiente para vender tudo que foi estipulado! Vamos recalcular?');
+
+        // TRADUZINDO A LÓGICA MATEMÁTICA: Vamos fazer uma repetição entre os valores a quantidade de venda, começando
+        // do maior para o menor. EX: O preço do recurso está 500. Vamos vender 5 vezes, isso daria 2500. Porém, só temos
+        // 1 comerciante disponível. Isso dá 1000. Então vamos verificar se 500x4 (2000) igual ou menor que 1000? Não. 
+        // 500x3 (1500) igual ou menor que 1000? Não. 500x2 (1000) igual ou menor que mil? SIM! Então vamos vender.
+        for(var i = (vezesVenda - 1); i >= 0; i--) {
+
+            quantidadeVenda = recursoValue * i;
+            vezesVenda = i;
+
+            if ((comerciantesAtualValue * 1000) >= quantidadeVenda) {
+                // Já achamos o valor que queríamos.
+                // Pode parar o loop agora mesmo!
+                break;
+            }
+
+        }
+    
+    }
+
+    // Para finalizarmos a lógica do Comerciante, vamos verificar se a lógica acima não transformou
+    // o valor de quantidadeVenda em zero. Pois se ele tiver transformado, quer dizer que ele varreu
+    // todos os valores e não encontrou uma quantidade que o comerciante pudesse carregar. Os motivos são:
+    // 1. Não existem comerciantes na aldeia.
+    // 2. O preço é muito alto para que o seu comerciante consiga carregar.
+    // 2 EX: Você só tem um comerciante, que carrega 1000, mas o preço do recurso está 1045.
+    if (quantidadeVenda == 0) {
+        // Exibe mensagem na tela, independente do modo debug.
+        console.log('Infelizmente não há nenhum comerciante disponível, ou o comerciante que você tem disponível não é capaz de carregar o que você deseja.');
+        
+        // Sai da função de compra, retornando o valor booleano false.
+        // Esse valor não será usado para nada, porém pelo menos
+        // não continuará a executar o resto da lógica da função venderRecurso().
+        return false;
+    }
+
+     /* ========================================================
+    /   Fazendo a compra agora mesmo!
+    /  ======================================================== */
+    // Agora que já temos a quantidade certa que vamos comprar,
+    // vamos colocar para funcionar agora mesmo.
+    // ========================================================
+    // Primeiro de tudo, vamos limpar todos os campos de compra e venda
+    // para evitar qualquer tipo de conflito futuro.
+    fieldVenderMadeira.val('');
+    fieldVenderArgila.val('');
+    fieldVenderFerro.val('');
+    
+    // Primeiro de tudo, vamos setar o loop de humanizar, com o tempo
+    // que foi estabelecido acima pela função generateTImeBeetweenClicks
+    setTimeout(function() {
+        inputVender.val(quantidadeVenda);
+        
+        setTimeout(function() {
+            calcularOferta.click();
+
+            setTimeout(function() {
+                document.getElementsByClassName('btn evt-confirm-btn btn-confirm-yes')[0].click();
+
+            }, generateTimeBetweenClicks());
+        }, generateTimeBetweenClicks());
+    }, generateTimeBetweenClicks());
+
+    // Após fazer a compra, vamos clicar no botão de cancelar, só pra
+    // desencargo de consciência em caso de algo der errado!
+    document.getElementsByClassName('btn evt-cancel-btn btn-confirm-no')[0].click();
+
+
+    console.log('Você acabou de vender ' + quantidadeVenda + 'de ' + recursoType + '. Parabéns!');
+
+
+}
 
 // Lógica se deve comprar ou vender recursos por pontos premium.
 function logicaGeral() {
@@ -276,6 +434,7 @@ function logicaGeral() {
             if (madeiraDaAldeia >= madeiraValue) {
                 // Vende os recursos!
                 consoleDebug('O mercado de madeira está em baixa! Venda madeira por ' + madeiraValue + '.');
+                venderRecurso('madeira');
             } else {
                 // Não há recursos suficientes para realizar a compra!
                 consoleDebug('O mercado de madeira está em baixa! Mas você não possui recursos o suficiente.');
@@ -303,6 +462,7 @@ function logicaGeral() {
             if (argilaDaAldeia >= argilaValue) {
                 // Vende os recursos!
                 consoleDebug('O mercado de argila está em baixa! Venda argila por ' + argilaValue + '.');
+                venderRecurso('argila');
             } else {
                 // Não há recursos suficientes para realizar a compra!
                 consoleDebug('O mercado de argila está em baixa! Mas você não possui recursos o suficiente.');
@@ -331,6 +491,7 @@ function logicaGeral() {
             if (ferroDaAldeia >= ferroValue) {
                 // Vende os recursos!
                 consoleDebug('O mercado de ferro está em baixa! Venda ferro por ' + ferroValue + '.');
+                venderRecurso('ferro');
             } else {
                 // Não há recursos suficientes para realizar a compra!
                 consoleDebug('O mercado de ferro está em baixa! Mas você não possui recursos o suficiente.');
