@@ -7,14 +7,14 @@
  */
 
 /*
-TODO [0]: As compras e vendas estão funcionando paralelamente, ou seja, ao mesmo tempo. Isto é um problema
+TODO: As compras e vendas estão funcionando paralelamente, ou seja, ao mesmo tempo. Isto é um problema
 quando existem diversos recursos para comprar ao mesmo tempo, ou diversos para vender ao mesmo tempo,
 ou diversos para comprar e vender ao mesmo tempo. Aqui precisamos fazer com que a função de compra seja
 assíncrona, de forma que ele aguarde a função anterior ser completa, antes de executar a próxima. Isso vai
 evitar os erros atuais que ocorrem.
 - Possível solução: usar funções assíncronas do javascript (async functions) junto com Promise e Await
 
-TODO [1]: Atualmente, a compra de recursos está com um pouco de problema, no qual faz a compra ser maior que a
+TODO: Atualmente, a compra de recursos está com um pouco de problema, no qual faz a compra ser maior que a
 esperada. Pois o sistema fica mais caro toda vez que você compra uma unidade, e esse pequeno valor extra
 faz com que seja comprado uma unidade a mais, e as vezes, gasta um comerciante a mais. 
 - Possível solução: usar um cálculo matemático para reduzir uma porcentagem do valor do input. Exemplo:
@@ -24,8 +24,8 @@ Se a compra vai ser de 2200, reduzir para 2000. O próprio TW recalcula pra voc�
 /* **************
     Configs
 **************** */
-var venderQuando    = 600;  // A partir de quanto pode começar a vender recursos? Se digitar 0, desabilita a venda.
-var comprarQuando   = 0; // A partir de quanto pode começar a comprar recursos? Se digitar 0, desabilita a compra.
+var venderQuando    = 500;  // A partir de quanto pode começar a vender recursos? Se digitar 0, desabilita a venda.
+var comprarQuando   = 1000; // A partir de quanto pode começar a comprar recursos? Se digitar 0, desabilita a compra.
 var maxTransacoes   = 1;    // Você vai definir nas configurações a quantidade de transação máxima, por compra ou venda.
 var tempoDeReacao   = 10000;//  1Tempo de reação para cada update em mili-segundos.
 var modoDebug       = true; // Deseja ativar o modo de debug, com mais detalhes? True ou False;
@@ -187,7 +187,6 @@ function comprarRecurso(recursoType) {
     // vezes que decidimos comprar acima. EX: Preco = 500, Vezes = 2 => quantidadeCompra = 1000;
     quantidadeCompra = recursoValue * vezesCompra;
 
-
     /* ========================================================
     /   Verificação do Comerciante
     /  ======================================================== */
@@ -196,6 +195,7 @@ function comprarRecurso(recursoType) {
     // (pois cada comerciante carrega no máximo 1000 recursos)
     // for menor que a quantidade de compra, previamente estabelecida
     // então não podemos comprar. Vamos recalcular a quantidade máxima.
+    /*
     if ((comerciantesAtualValue * 1000) <= quantidadeCompra) {
         consoleDebug('Seus comerciantes não tem capacidade suficiente para comprar tudo que foi estipulado! Vamos recalcular?');
 
@@ -216,7 +216,7 @@ function comprarRecurso(recursoType) {
         }
     
     }
-
+    */
     // Para finalizarmos a lógica do Comerciante, vamos verificar se a lógica acima não transformou
     // o valor de quantidadeCompra em zero. Pois se ele tiver transformado, quer dizer que ele varreu
     // todos os valores e não encontrou uma quantidade que o comerciante pudesse carregar. Os motivos são:
@@ -444,7 +444,7 @@ function venderRecurso(recursoType) {
     document.getElementsByClassName('btn evt-cancel-btn btn-confirm-no')[0].click();
 
 
-    console.log('Você acabou de vender ' + quantidadeVendaReal + ' de ' + recursoType + '. Parabéns!');
+    console.log('Você acabou de vender ' + quantidadeVenda + ' de ' + recursoType + '. Parabéns!');
 
 
 }
