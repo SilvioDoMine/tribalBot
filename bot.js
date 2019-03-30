@@ -7,14 +7,14 @@
  */
 
 /*
-TODO: As compras e vendas estão funcionando paralelamente, ou seja, ao mesmo tempo. Isto é um problema
+TODO [0]: As compras e vendas estão funcionando paralelamente, ou seja, ao mesmo tempo. Isto é um problema
 quando existem diversos recursos para comprar ao mesmo tempo, ou diversos para vender ao mesmo tempo,
 ou diversos para comprar e vender ao mesmo tempo. Aqui precisamos fazer com que a função de compra seja
 assíncrona, de forma que ele aguarde a função anterior ser completa, antes de executar a próxima. Isso vai
 evitar os erros atuais que ocorrem.
 - Possível solução: usar funções assíncronas do javascript (async functions) junto com Promise e Await
 
-TODO: Atualmente, a compra de recursos está com um pouco de problema, no qual faz a compra ser maior que a
+TODO [1]: Atualmente, a compra de recursos está com um pouco de problema, no qual faz a compra ser maior que a
 esperada. Pois o sistema fica mais caro toda vez que você compra uma unidade, e esse pequeno valor extra
 faz com que seja comprado uma unidade a mais, e as vezes, gasta um comerciante a mais. 
 - Possível solução: usar um cálculo matemático para reduzir uma porcentagem do valor do input. Exemplo:
@@ -25,7 +25,7 @@ Se a compra vai ser de 2200, reduzir para 2000. O próprio TW recalcula pra voc�
     Configs
 **************** */
 var venderQuando    = 600;  // A partir de quanto pode começar a vender recursos? Se digitar 0, desabilita a venda.
-var comprarQuando   = 1000; // A partir de quanto pode começar a comprar recursos? Se digitar 0, desabilita a compra.
+var comprarQuando   = 0; // A partir de quanto pode começar a comprar recursos? Se digitar 0, desabilita a compra.
 var maxTransacoes   = 1;    // Você vai definir nas configurações a quantidade de transação máxima, por compra ou venda.
 var tempoDeReacao   = 10000;//  1Tempo de reação para cada update em mili-segundos.
 var modoDebug       = true; // Deseja ativar o modo de debug, com mais detalhes? True ou False;
@@ -422,7 +422,12 @@ function venderRecurso(recursoType) {
     // Primeiro de tudo, vamos setar o loop de humanizar, com o tempo
     // que foi estabelecido acima pela função generateTImeBeetweenClicks
     setTimeout(function() {
-        inputVender.val(quantidadeVenda);
+        // Antes de inserir a quantidade, vamos fazer um "sanatize" no valor, para corrigir
+        // a correção que o TW faz no valor final. Para isso, vamos reduzir 100 no valor final
+        // da compra. O próprio TW vai fazer a correção.
+        quantidadeVendaReal = quantidadeVenda - 100;
+
+        inputVender.val(quantidadeVendaReal);
         
         setTimeout(function() {
             calcularOferta.click();
@@ -439,7 +444,7 @@ function venderRecurso(recursoType) {
     document.getElementsByClassName('btn evt-cancel-btn btn-confirm-no')[0].click();
 
 
-    console.log('Você acabou de vender ' + quantidadeVenda + ' de ' + recursoType + '. Parabéns!');
+    console.log('Você acabou de vender ' + quantidadeVendaReal + ' de ' + recursoType + '. Parabéns!');
 
 
 }
