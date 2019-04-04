@@ -1,5 +1,5 @@
 /* ==========================================================
- * Robô de Wallstreet - v 1.0.0
+ * Robô de Wallstreet - v 1.0.3
  * ==========================================================
  * Desenvolvido por: Arthur Henrique
  * E-mail: arthurhenrique@live.com
@@ -24,8 +24,8 @@ Se a compra vai ser de 2200, reduzir para 2000. O próprio TW recalcula pra voc�
 /* **************
     Configs
 **************** */
-var venderQuando    = 500;  // A partir de quanto pode começar a vender recursos? Se digitar 0, desabilita a venda.
-var comprarQuando   = 1000; // A partir de quanto pode começar a comprar recursos? Se digitar 0, desabilita a compra.
+var venderQuando    = 5000;  // A partir de quanto pode começar a vender recursos? Se digitar 0, desabilita a venda.
+var comprarQuando   = 1100; // A partir de quanto pode começar a comprar recursos? Se digitar 0, desabilita a compra.
 var maxTransacoes   = 1;    // Você vai definir nas configurações a quantidade de transação máxima, por compra ou venda.
 var tempoDeReacao   = 10000;//  1Tempo de reação para cada update em mili-segundos.
 var modoDebug       = true; // Deseja ativar o modo de debug, com mais detalhes? True ou False;
@@ -265,6 +265,9 @@ function comprarRecurso(recursoType) {
         // Segundamente, vamos setar o loop de humanizar, com o tempo
         // que foi estabelecido acima pela função generateTImeBeetweenClicks
         setTimeout(function() {
+			// Para evitar erros de compras, vamos recalcular o novo valor da quantidadeCompra.
+			// Vamos deixar que o próprio tribal wars corrija para o valor real.
+			quantidadeCompra = quantidadeCompra - 200;
             inputComprar.val(quantidadeCompra);
             
             setTimeout(function() {
